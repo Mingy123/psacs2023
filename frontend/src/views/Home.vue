@@ -45,7 +45,7 @@ const plotlyChart3 = ref(null);
 const plotlyChart4 = ref(null);
 const n = ref(0)
 
-const notif_items = ref(null)
+const notif_items = ref([])
 
 onMounted(() => {
   Plotly.newPlot(plotlyChart1.value, data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
@@ -65,7 +65,7 @@ function makeChart() {
   data3[0]['y'].push((Math.random()-0.5) * Math.random() * 5 + data3[0]['y'][data3[0]['y'].length-1]);
   Plotly.redraw(plotlyChart4.value);
 
-  if (data2[0]['y'][data3[0]['y'].length-1] > 10) {
+  if (data2[0]['y'][data2[0]['y'].length-1] > 10) {
     notif_items.value.push({ title: 'Not Enough Empty Containers!', message: 'TUAS PORT will not have enough Empty Containers in the next two months! Obtain more.'});
   }
 
