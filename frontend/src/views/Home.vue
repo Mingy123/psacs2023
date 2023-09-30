@@ -20,6 +20,22 @@ const data3 = [{
   type:"scatter"
 }]
 
+const capacity_data = {
+  x: ['Reefer', 'DG', 'Total'],
+  y: [58, 45, 72],
+  name: 'Used',
+  type: 'bar'
+}
+
+const total_capacity = {
+  x: ['Reefer', 'DG', 'Total'],
+  y: [100-58, 100-45, 100-72],
+  name: 'Remaining',
+  type: 'bar'
+};
+
+var cap_data = [capacity_data, total_capacity]
+
 const layout = {
   title: "My graph"
 }
@@ -37,7 +53,7 @@ const notif_items = ref(
 
 onMounted(() => {
   Plotly.newPlot(plotlyChart1.value, data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
-  Plotly.newPlot(plotlyChart2.value, data, layout, {responsive: true});
+  Plotly.newPlot(plotlyChart2.value, cap_data, {barmode: 'stack', title: "Resources at TUAS PORT"}, {responsive: true});
   Plotly.newPlot(plotlyChart3.value, data2, {title: "Total Mass of Ore Shipped"}, {responsive: true});
   Plotly.newPlot(plotlyChart4.value, data3, {title: "Total Mass of Oil Shipped"}, {responsive: true});
   makeChart()  
@@ -60,37 +76,40 @@ function makeChart() {
 <template>
 <body>
   <h1>The Frontend</h1>
-  <button @click="n+=1">{{ n }}</button>
+  <!-- <button @click="n+=1">{{ n }}</button>
   <p v-if="n == 3">Cool</p>
-  <p v-else>Not cool</p>
+  <p v-else>Not cool</p> -->
   <div id="row-1">
     <div class="col_double">
-      <h3>Chart of Data</h3>
+      <h3>Throughput Forecast</h3>
       <div ref="plotlyChart1"></div>
     </div>
     <div class="col_double">
-      <h3>Chart of Data</h3>
+      <h3>Resources</h3>
       <div ref="plotlyChart2"></div>
     </div>
     <div class="col_single scrollable">
-      <div class="card" v-for="notif_info in notif_items">
-        <svg class="card_image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 17H22V19H2V17H4V10C4 5.58172 7.58172 2 12 2C16.4183 2 20 5.58172 20 10V17ZM9 21H15V23H9V21Z"/></svg>
-        <div class="card_content">
-          <h3>{{ notif_info.title }}</h3>
-          <p>{{ notif_info.message }}</p>
-          <a class="close" href=""><u>close</u></a>
+      <h3><u>Notifications</u></h3>
+      <div v-for="notif_info in notif_items">
+        <div class="card">
+          <svg class="card_image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 17H22V19H2V17H4V10C4 5.58172 7.58172 2 12 2C16.4183 2 20 5.58172 20 10V17ZM9 21H15V23H9V21Z"/></svg>
+          <div class="card_content">
+            <h4>{{ notif_info.title }}</h4>
+            <p>{{ notif_info.message }}</p>
+            <a class="close" href="">Close</a>
+          </div>
         </div>
-     </div>
+        <hr>
+    </div>
     </div>
   </div>
+  <h3>Shipping Trends</h3>
   <div id="row-2">
     <div class="col_double">
-      <h3>Chart of Data</h3>
       <div ref="plotlyChart3"></div>
       </div>
 
     <div class="col_double">
-      <h3>Chart of Data</h3>
       <div ref="plotlyChart4"></div>
     </div>
   </div>
@@ -99,9 +118,31 @@ function makeChart() {
 
 <style scoped>
 /* Scoped means only this file */
-/* body {
-  background-color: aqua;
-} */
+
+body {
+  padding-left: 50px;
+  padding-right: 50px;
+  margin: 0;
+}
+
+h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 5em;
+  text-align: center;
+}
+
+h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+h4 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.1em;
+  margin-top: 0px;
+}
+
 #row-1 {
   display: flex;
   flex-direction: row;
@@ -126,18 +167,24 @@ function makeChart() {
 .scrollable {
   overflow-x: hidden;
   overflow-y: auto;
+  background-color: whitesmoke;
   outline-style: solid;
+  outline-width: 0px;
+  padding: 18px;
 }
 .card {
   display: flex;
   flex-direction: row;
-  padding: 10px;
   align-items: center;
 }
 .card_image {
   padding-right: 10px;
   max-width: 36px;
   height: auto;
+}
+
+.card_content {
+  margin: 12px;
 }
 
 </style>
