@@ -7,12 +7,26 @@ const data = [{
   y: [10,15,13,17],
   type:"scatter"
 }]
+
+const data2 = [{
+  x: [1,2,3,4],
+  y: [3,5,2,6],
+  type:"scatter"
+}]
+
+const data3 = [{
+  x: [1,2,3,4],
+  y: [21,25,24,22],
+  type:"scatter"
+}]
+
 const layout = {
   title: "My graph"
 }
 const plotlyChart1 = ref(null);
 const plotlyChart2 = ref(null);
 const plotlyChart3 = ref(null);
+const plotlyChart4 = ref(null);
 const n = ref(0)
 
 const notif_items = ref(
@@ -24,8 +38,22 @@ const notif_items = ref(
 onMounted(() => {
   Plotly.newPlot(plotlyChart1.value, data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
   Plotly.newPlot(plotlyChart2.value, data, layout, {responsive: true});
-  Plotly.newPlot(plotlyChart3.value, data, layout, {responsive: true});
+  Plotly.newPlot(plotlyChart3.value, data2, {title: "Total Mass of Ore Shipped"}, {responsive: true});
+  Plotly.newPlot(plotlyChart4.value, data3, {title: "Total Mass of Oil Shipped"}, {responsive: true});
+  makeChart()  
 });
+
+
+function makeChart() {
+  data2[0]['x'].push(data2[0]['x'].length+1);
+  data2[0]['y'].push((Math.random()-1) * Math.random() * 5 + data2[0]['y'][data2[0]['y'].length-1]);
+  Plotly.redraw(plotlyChart3.value);
+
+  data3[0]['x'].push(data3[0]['x'].length+1);
+  data3[0]['y'].push((Math.random()-1) * Math.random() * 5 + data3[0]['y'][data3[0]['y'].length-1]);
+  Plotly.redraw(plotlyChart4.value);
+  setTimeout(makeChart, 10000);
+}
 
 </script>
 
@@ -55,6 +83,17 @@ onMounted(() => {
      </div>
     </div>
   </div>
+  <div id="row-2">
+    <div class="col_double">
+      <h3>Chart of Data</h3>
+      <div ref="plotlyChart3"></div>
+      </div>
+
+    <div class="col_double">
+      <h3>Chart of Data</h3>
+      <div ref="plotlyChart4"></div>
+    </div>
+  </div>
 </body>
 </template>
 
@@ -69,6 +108,14 @@ onMounted(() => {
   justify-content: space-around;
   gap: 20px;
 }
+
+#row-2 {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  gap: 20px;
+}
+
 .col_double {
   flex-grow: 2;
 }
