@@ -40,8 +40,10 @@ const plotlyChart4 = ref(null);
 const n = ref(0)
 
 const notif_items = ref(null)
+const admin = ref(false)
 
 onMounted(() => {
+  admin.value = (localStorage.isAdmin == 'true')
   Plotly.newPlot(plotlyChart2.value, cap_data, {barmode: 'stack', title: "Resources at TUAS PORT"}, {responsive: true});
   Plotly.newPlot(plotlyChart3.value, data2, {title: "Total Mass of Ore Shipped"}, {responsive: true});
   Plotly.newPlot(plotlyChart4.value, data3, {title: "Total Mass of Oil Shipped"}, {responsive: true});
@@ -115,58 +117,281 @@ async function postData(url = "", data = {}) {
   });
   return response.json(); // parses JSON response into native JavaScript objects
 }
+
+const sidebarVisible = ref(false)
+const notifPopup = ref(false)
+function notifClick(event) {
+  if (event.target == event.currentTarget) {
+    notifPopup.value = false
+  }
+}
+const loginPopup = ref(false)
+const loginPassword = ref('')
+function loginClick(event) {
+  if (event.target == event.currentTarget) {
+    loginPopup.value = false
+  }
+}
+function checkLogin() {
+  if (loginPassword.value == "rottenlemons") {
+    admin.value = true
+    localStorage.setItem("isAdmin", true)
+  } else {
+    admin.value = true
+    localStorage.setItem("isAdmin", false)
+  }
+  loginPassword.value = ''
+  loginPopup.value = false
+}
 </script>
 
 <template>
 <body>
-  <h1>The Frontend</h1>
-  <!-- <button @click="n+=1">{{ n }}</button>
-  <p v-if="n == 3">Cool</p>
-  <p v-else>Not cool</p> -->
-  <div id="row-1">
-    <div class="col_double">
-      <h3>Throughput Forecast</h3>
-      <div ref="plotlyChart1"></div>
+  <Transition>
+  <div class="sidebar" v-if="sidebarVisible">
+    <div class="buttons">
+      <div class="sidebarBtn"><RouterLink to="/">Home</RouterLink></div>
+      <div class="sidebarBtn"><RouterLink to="/resources">Resource Usage</RouterLink></div>
+      <div class="sidebarBtn"><RouterLink to="/shipping">Shipping Trends</RouterLink></div>
     </div>
-    <div class="col_double">
-      <h3>Resources</h3>
-      <div ref="plotlyChart2"></div>
-    </div>
-    <div class="col_single scrollable">
-      <h3><u>Notifications</u></h3>
-      <div v-for="notif_info in notif_items">
-        <div class="card">
-          <svg class="card_image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 17H22V19H2V17H4V10C4 5.58172 7.58172 2 12 2C16.4183 2 20 5.58172 20 10V17ZM9 21H15V23H9V21Z"/></svg>
-          <div class="card_content">
-            <h4>{{ notif_info.title }}</h4>
-            <p>{{ notif_info.message }}</p>
-            <a class="close" href="">Close</a>
-          </div>
-        </div>
-        <hr>
-    </div>
-    </div>
-  </div>
-  <h3>Shipping Trends</h3>
-  <div id="row-2">
-    <div class="col_double">
-      <div ref="plotlyChart3"></div>
+    <div class="sidebarBottomContainer">
+      <div class="sidebarBottom" @click="notifPopup = true">
+        <svg fill="#ff4f4f" width="26px" class="notif-icon" viewBox="0 0 448 512">
+          <path d="M224 0c-17.7 0-32 14.3-32 32V49.9C119.5 61.4 64 124.2 64 200v33.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V200c0-75.8-55.5-138.6-128-150.1V32c0-17.7-14.3-32-32-32zm0 96h8c57.4 0 104 46.6 104 104v33.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V200c0-57.4 46.6-104 104-104h8zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z"/>
+        </svg>
+        <p>Notifications</p>
       </div>
-
-    <div class="col_double">
-      <div ref="plotlyChart4"></div>
+      <div :key="admin" class="sidebarBottom" @click="loginPopup = true">
+        <svg v-if="admin != true" width="26px" viewBox="0 0 448 512"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg>
+        <svg v-else width="26px" viewBox="0 0 576 512"><path d="M352 144c0-44.2 35.8-80 80-80s80 35.8 80 80v48c0 17.7 14.3 32 32 32s32-14.3 32-32V144C576 64.5 511.5 0 432 0S288 64.5 288 144v48H64c-35.3 0-64 28.7-64 64V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V256c0-35.3-28.7-64-64-64H352V144z"/></svg>
+        <p>Admin Login</p>
+      </div>
     </div>
   </div>
+  </Transition>
+  <div class="content">
+    <div class="sidebarIcon" @click="sidebarVisible = !sidebarVisible">
+      <svg height="1em" viewBox="0 0 448 512"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
+    </div>
+    <h1>The Frontend</h1>
+    <div id="row-1">
+      <div class="col_double">
+        <h3>Throughput Forecast</h3>
+        <div ref="plotlyChart1"></div>
+      </div>
+      <div class="col_double">
+        <h3>Resources</h3>
+        <div ref="plotlyChart2"></div>
+      </div>
+      <div class="col_single scrollable">
+        <h3><u>Notifications</u></h3>
+        <div v-for="notif_info in notif_items">
+          <div class="card">
+            <svg class="card_image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 17H22V19H2V17H4V10C4 5.58172 7.58172 2 12 2C16.4183 2 20 5.58172 20 10V17ZM9 21H15V23H9V21Z"/></svg>
+            <div class="card_content">
+              <h4>{{ notif_info.title }}</h4>
+              <p>{{ notif_info.message }}</p>
+              <a class="close" href="">Close</a>
+            </div>
+          </div>
+          <hr>
+      </div>
+      </div>
+    </div>
+    <h3>Shipping Trends</h3>
+    <div id="row-2">
+      <div class="col_double">
+        <div ref="plotlyChart3"></div>
+        </div>
+
+      <div class="col_double">
+        <div ref="plotlyChart4"></div>
+      </div>
+    </div>
+  </div>
+  <Transition>
+  <div @click="notifClick" v-if="notifPopup" class="popup">
+    <div class="popup-content">
+      <h1>Stuff</h1>
+      <h2>Stuff (scrollable)</h2>
+      <h1>Stuff</h1>
+      <h2>Stuff (scrollable)</h2>
+      <h1>Stuff</h1>
+      <h2>Stuff (scrollable)</h2>
+      <h1>Stuff</h1>
+      <h2>Stuff (scrollable)</h2>
+      <h1>Stuff</h1>
+      <h2>Stuff (scrollable)</h2>
+      <h1>Stuff</h1>
+      <h2>Stuff (scrollable)</h2>
+    </div>
+  </div>
+  </Transition>
+  <Transition>
+  <div @click="loginClick" v-if="loginPopup" class="popup">
+    <div class="popup-content login-content">
+      <p><u>Login to update current data</u></p>
+      <input placeholder="password" type="password" v-model="loginPassword" @keyup.enter="checkLogin">
+      <button @click="checkLogin">Submit</button>
+    </div>
+  </div>
+  </Transition>
 </body>
 </template>
 
 <style scoped>
-/* Scoped means only this file */
+.v-enter-active, .v-leave-active {
+  transition: opacity 0.2s ease;
+}
+.v-enter-from, .v-leave-to {
+  opacity: 0;
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.popup-content {
+  background: white;
+  padding: 10px 5vw;
+  border-radius: 10px;
+  text-align: center;
+  overflow-y: auto;
+  max-height: 70vh;
+  max-width: 80vw;
+  scrollbar-width: 0;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.login-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  & input {
+    width: 70%;
+    min-width: 25vw;
+    padding: 10px;
+    border: 1px solid #dcdcdc;
+    background-color: hsl(276, 40%, 95%);
+    border-radius: 5px;
+    margin-bottom: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.2s ease;
+    &:focus {
+      outline: none;
+      border-color: #0074d9;
+    }
+  }
+  & button {
+    background-color: #d8c3a5;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 4px 8px;
+    font-size: 16px;
+    transition: filter 0.3s ease;
+    &:hover {
+      filter: contrast(1.3);
+    }
+  }
+}
+
+.sidebarIcon {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  background-color: #bbb;
+  transition: background-color 0.2s ease;
+  &:hover {
+    background-color: #999;
+    cursor: pointer;
+  }
+}
+
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: #d8c3a5;
+  &.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  &.v-enter-active, &.v-leave-active {
+    transition: flex 0.2s ease;
+    min-width: 0;
+  }
+  &.v-enter-from, &.v-leave-to {
+    flex: 0;
+  }
+}
+
+
+.sidebarBtn {
+  background-color: hsl(6, 73%, 68%);
+  font-size: 24px;
+  width: 100%;
+  margin: 8px 0;
+  padding: 16px 4px;
+  text-align: center;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  & a {
+    text-decoration: none;
+    color: #333;
+  }
+  &:hover {
+    background-color: hsl(6, 63%, 55%);
+    cursor: pointer;
+    & a {
+      color: #ddd;
+    }
+  }
+}
+
+.sidebarBottom {
+  margin-top: 12px;
+  background-color: #eae7dc;
+  display: flex;
+  justify-content: space-evenly;
+  border-radius: 8px;
+  transition: filter 0.1s ease;
+  &:hover {
+    cursor: pointer;
+    filter: brightness(0.9);
+  }
+  & p {
+    font-size: 24px;
+    margin: 16px 0px;
+  }
+}
+
+.content {
+  flex: 4;
+  overflow-x: auto;
+  overflow-y: auto;
+}
 
 body {
-  padding-left: 50px;
-  padding-right: 50px;
-  margin: 0;
+  display: flex;
+  height: 100vh;
 }
 
 h1 {
