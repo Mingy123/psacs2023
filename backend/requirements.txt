@@ -6,3 +6,4 @@ seaborn
 numpy
 statsmodels
 flask
+flask-cors
