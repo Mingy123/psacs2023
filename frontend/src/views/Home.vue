@@ -2,12 +2,6 @@
 import { ref, onMounted } from 'vue';
 import Plotly from 'plotly.js-dist';
 
-const data = [{
-  x: [1,2,3,4],
-  y: [10,15,13,17],
-  type:"scatter"
-}]
-
 const data2 = [{
   x: [1,2,3,4],
   y: [3,5,2,6],
@@ -48,10 +42,39 @@ const n = ref(0)
 const notif_items = ref(null)
 
 onMounted(() => {
-  Plotly.newPlot(plotlyChart1.value, data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
   Plotly.newPlot(plotlyChart2.value, cap_data, {barmode: 'stack', title: "Resources at TUAS PORT"}, {responsive: true});
   Plotly.newPlot(plotlyChart3.value, data2, {title: "Total Mass of Ore Shipped"}, {responsive: true});
   Plotly.newPlot(plotlyChart4.value, data3, {title: "Total Mass of Oil Shipped"}, {responsive: true});
+  postData("http://127.0.0.1:8080/current_data").then((data) => {
+    var plot_data = [{
+      x: Object.keys(data),
+      y: Object.values(data).map(innerDict => innerDict["Total Container Throughput "]),
+      type: 'scatter',
+      mode: 'lines',
+      name: "Historical Data",
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 1
+      }
+    }]
+    Plotly.newPlot(plotlyChart1.value, plot_data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
+    postData("http://127.0.0.1:8080/forecast").then((data) => {
+      // console.log(Objectdata);
+      console.log(Object.values(data).map(innerDict => innerDict["0"]));
+      plot_data.push({
+        x: Object.keys(data),
+        y: Object.values(data).map(innerDict => innerDict["0"]),
+        type: 'scatter',
+        mode: "lines",
+        name: "Forecast",
+        line: {
+          color: 'rgb(219, 64, 82)',
+          width: 2
+        }
+      })
+      Plotly.newPlot(plotlyChart1.value, plot_data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
+    });
+  });
   makeChart()  
 });
 
@@ -75,6 +98,23 @@ function makeChart() {
   setTimeout(makeChart, 10000);
 }
 
+async function postData(url = "", data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
 </script>
 
 <template>
