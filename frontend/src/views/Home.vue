@@ -62,12 +62,20 @@ onMounted(() => {
 
 function makeChart() {
   data2[0]['x'].push(data2[0]['x'].length+1);
-  data2[0]['y'].push((Math.random()-1) * Math.random() * 5 + data2[0]['y'][data2[0]['y'].length-1]);
+  data2[0]['y'].push((Math.random()-0.5) * Math.random() * 5 + data2[0]['y'][data2[0]['y'].length-1]);
   Plotly.redraw(plotlyChart3.value);
 
   data3[0]['x'].push(data3[0]['x'].length+1);
-  data3[0]['y'].push((Math.random()-1) * Math.random() * 5 + data3[0]['y'][data3[0]['y'].length-1]);
+  data3[0]['y'].push((Math.random()-0.5) * Math.random() * 5 + data3[0]['y'][data3[0]['y'].length-1]);
   Plotly.redraw(plotlyChart4.value);
+
+  if (data2[0]['y'] > 10) {
+    notif_items.value.push({ title: 'Not Enough Empty Containers!', message: 'TUAS PORT will not have enough Empty Containers in the next two months! Obtain more.'});
+  }
+
+  if (data3[0]['y'] > 20) {
+    notif_items.value.push({ title: 'Influx of Ships Imminent!', message: 'Throughput is predicted to increase by 20% next month. Ready additional manpower.'});
+  }
   setTimeout(makeChart, 10000);
 }
 
