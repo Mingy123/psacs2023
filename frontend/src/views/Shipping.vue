@@ -185,7 +185,22 @@
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
   }
+
 </script>
 <template>
-  <div id="globe"></div>
+  <div id="globe">
+    <RouterLink to="/"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/><span class="material-symbols-outlined">home</span></RouterLink>
+    
+  </div>
 </template>
+
+<style scoped>
+  #globe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin-bottom: -20px;
+  } 
+</style>
