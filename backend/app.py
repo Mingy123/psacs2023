@@ -19,6 +19,7 @@ df.sort_values(by="Data Series", inplace=True)
 df.reset_index(drop=True, inplace=True)
 df.set_index("Data Series", inplace=True)
 
+global ltc_model
 in_features = 4
 out_features = 3
 wiring = AutoNCP(100, out_features)  
@@ -51,7 +52,8 @@ def predict():
         df.reset_index(drop=True, inplace=True)
         df.set_index("Data Series", inplace=True)
 
-    if (args["model"] == "sarimax" or "input" not in args):
+    # if "model" in args or "input" not in args:
+    if False:
         order = (1, 1, 1)
         seasonal_order = (1, 1, 1, 12)
 
@@ -64,10 +66,11 @@ def predict():
 
         out = forecast_df.to_json(orient='index')
     else:
+        global ltc_model
         
-        with ltc_model.no_grad():
-            data = torch.tensor(df.iloc[-12:, :].loc[:, ["prevVA", "prevTC", "prevTCT", "gdp"]].values, dtype=torch.float32)/10000
-            out = ltc_model(data)[0].detach().numpy() * 10000
+        ltc_model.eval()
+        data = torch.tensor(df.iloc[-12:, :].loc[:, ["prevVA", "prevTC", "prevTCT", "gdp"]].values, dtype=torch.float32)/10000
+        out = ltc_model(data)[0].detach().numpy() * 10000
         out = pd.DataFrame(out, columns=df.columns, index=df.index)
         out = out.to_json(orient='index')
     return out
