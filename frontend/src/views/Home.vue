@@ -19,6 +19,14 @@ var recommendations = ref([
 ]);
 const admin = ref(false)
 
+function notify(s) {
+  var x = document.getElementById("snackbar");
+  x.className = "show"
+  x.innerText = s
+  setTimeout(() => {
+    x.className = x.className.replace("show", "")
+  }, 2500);
+}
 
 onMounted(() => {
   admin.value = (localStorage.isAdmin == 'true')
@@ -109,6 +117,25 @@ function checkLogin() {
   loginPassword.value = ''
   loginPopup.value = false
 }
+
+const showUpdateData = ref(false)
+const updateDataBtn = ref(null)
+const updateData1 = ref('')
+const updateData2 = ref('')
+function updateDataBtnClick() {
+  if (admin.value == true) {
+    showUpdateData.value = true
+  } else {
+    notify("Requires admin privileges")
+  }
+}
+
+function updateDataSubmit() {
+  notify("Submitted!")
+  updateData1.value = ''
+  updateData2.value = ''
+  showUpdateData.value = false
+}
 </script>
 
 <template>
@@ -148,13 +175,20 @@ function checkLogin() {
         <div ref="plotlyChart1"></div>
       </div>
     </div>
+    <div class="update-data">
+      <div v-if="showUpdateData" class="update-data-form">
+        <input @keyup.enter="updateDataSubmit" v-model="updateData1" placeholder="U.S. GDP this month">
+        <input @keyup.enter="updateDataSubmit" v-model="updateData2" placeholder="Cargo in tonnes">
+        <button @click="updateDataSubmit">Submit</button>
+      </div>
+      <button v-else ref="updateDataBtn" @click="updateDataBtnClick">Update Data</button>
+    </div>
     <div class="recco-list">
       <div class="recco-item" v-for="(recommendation, index) in recommendations" :key="index">
         <p><strong>{{ recommendation.title }}</strong></p>
         <p>{{ recommendation.description }}</p>
       </div>
     </div>
-  
   </div>
   <Transition>
   <div @click="notifClick" v-if="notifPopup" class="popup">
@@ -195,6 +229,41 @@ function checkLogin() {
   scrollbar-width: 0;
   &::-webkit-scrollbar {
     display: none;
+  }
+}
+
+.update-data {
+  padding: 12px 5%;
+  display: flex;
+  justify-content: right;
+  & button {
+    background-color: #0074d9;
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    margin: 4px 8px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    &:hover {
+      background-color: hsl(208, 100%, 53%);
+    }
+  }
+}
+
+.update-data-form {
+  display: flex;
+  align-items: center;
+  & input {
+    padding: 10px;
+    border: none;
+    background-color: hsl(35, 60%, 65%);
+    border-radius: 8px;
+    margin-right: 8px;
+    font-size: 16px;
+    text-align: center;
+    transition: border-color 0.2s ease;
   }
 }
 

@@ -43,13 +43,23 @@ function makeChart() {
 }
 
 function add_notif(s) { // localStorage notifications: { title:str, message:str }
+  notify("You have a new alert.")
   let n = localStorage.getItem("notifications");
   let notifs = n ? JSON.parse(n) : [];
   notifs.push(s);
   localStorage.setItem("notifications", JSON.stringify(notifs));
 }
 
+function notify(s) {
+  var x = document.getElementById("snackbar");
+  x.className = "show"
+  x.innerText = s
+  setTimeout(() => {
+    x.className = x.className.replace("show", "")
+  }, 2500);
+}
 </script>
+
 <template>
   <div class="backBtn">
     <RouterLink to="/"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/><span class="material-symbols-outlined">home</span></RouterLink>
