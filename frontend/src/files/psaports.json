@@ -1,0 +1,93 @@
+{
+    "type": "PortsCollection",
+    "ports": [
+        {
+            "text": "USCHT",
+            "size": 1.0,
+            "country": "United States",
+            "city": "Chester",
+            "lat": "39.834",
+            "lng": "-75.374"
+        },
+        {
+            "text": "BEANR",
+            "size": 1.0,
+            "country": "Belgium",
+            "city": "Antwerp",
+            "lat": "51.302",
+            "lng": "4.311"
+        },
+        {
+            "text": "SADMM",
+            "size": 1.0,
+            "country": "Saudi Arabia",
+            "city": "Dammam",
+            "lat": "26.441",
+            "lng": "50.148"
+        },
+        {
+            "text": "INTUT",
+            "size": 1.0,
+            "country": "India",
+            "city": "Tuticorin",
+            "lat": "8.782",
+            "lng": "78.195"
+        },
+        {
+            "text": "JPKKJ",
+            "size": 1.0,
+            "country": "Japan",
+            "city": "Kitakyushu",
+            "lat": "33.94001",
+            "lng": "92.9"
+        },
+        {
+            "text": "KRINC",
+            "size": 1.0,
+            "country": "South Korea",
+            "city": "Incheon",
+            "lat": "37.41841",
+            "lng": "130.784"
+        },
+        {
+            "text": "CNDLC",
+            "size": 1.0,
+            "country": "China",
+            "city": "Dalian",
+            "lat": "38.99747",
+            "lng": "121.7645"
+        },
+        {
+            "text": "SGSIN",
+            "size": 1.0,
+            "country": "Singapore",
+            "city": "Singapore",
+            "lat": "1.2916666666667",
+            "lng": "103.85"
+        },
+        {
+            "text": "VNSIP",
+            "size": 1.0,
+            "country": "Vietnam",
+            "city": "Saigon",
+            "lat": "10.75",
+            "lng": "106.73333333333333"
+        },
+        {
+            "text": "THLCH",
+            "size": 1.0,
+            "country": "Thailand",
+            "city": "Laem Chabang",
+            "lat": "13.08",
+            "lng": "100.88"
+        },
+        {
+            "text": "IDTPP",
+            "size": 1.0,
+            "country": "Indonesia",
+            "city": "Tanjong Priok",
+            "lat": "6.104",
+            "lng": "106.8865"
+        }
+    ]
+}
