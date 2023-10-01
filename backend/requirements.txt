@@ -1,5 +1,6 @@
 ncps
 torch
+pytorch-lightning
 pandas
 matplotlib
 seaborn 

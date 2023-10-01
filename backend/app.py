@@ -5,11 +5,15 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 import pandas as pd
 import ast
 import numpy as np
+from ncps.torch import LTC
+import pytorch_lightning as pl
+from ncps.wirings import AutoNCP
+import torch
 
 app = Flask(__name__)
 CORS(app)
 global df
-df = pd.read_excel("singstat_historical_shipping.xlsx").iloc[9:354]
+df = pd.read_excel("singstat_historical_shipping.xlsx")
 df.columns = df.iloc[0]
 df = df.iloc[1:]
 df["Data Series"] = pd.to_datetime(df["Data Series"])
@@ -17,6 +21,11 @@ df.sort_values(by="Data Series", inplace=True)
 df.reset_index(drop=True, inplace=True)
 df.set_index("Data Series", inplace=True)
 
+in_features = 4
+out_features = 3
+wiring = AutoNCP(100, out_features)  
+ltc_model = LTC(in_features, wiring, batch_first=True)
+ltc_model.load_state_dict(torch.load('model.pth')).to('cpu')
 
 @app.route("/forecast-alive")
 def is_alive():
@@ -33,6 +42,7 @@ def get_current():
 def predict():
     args = request.get_json() 
     global df
+    global out
     if "input" in args:
         input = args["input"]
         df_new = pd.read_json(ast.literal_eval(input), orient='index')
@@ -41,17 +51,26 @@ def predict():
         df.sort_values(by="Data Series", inplace=True)
         df.reset_index(drop=True, inplace=True)
         df.set_index("Data Series", inplace=True)
-    order = (1, 1, 1)
-    seasonal_order = (1, 1, 1, 12)
 
-    model = SARIMAX(np.asarray(df['Total Container Throughput '], dtype=float), order=order, seasonal_order=seasonal_order)
-    results = model.fit()
-    forecast_steps = 12  # Adjust as needed
-    forecast = results.get_forecast(steps=forecast_steps)
-    forecast_index = pd.date_range(df.index[-1], periods=forecast_steps + 1, freq='M')[1:]
-    forecast_df = pd.DataFrame(forecast.predicted_mean, index=forecast_index)
+    if (args["model"] == "sarimax"):
+        order = (1, 1, 1)
+        seasonal_order = (1, 1, 1, 12)
 
-    out = forecast_df.to_json(orient='index')
+        model = SARIMAX(np.asarray(df['Total Container Throughput '], dtype=float), order=order, seasonal_order=seasonal_order)
+        results = model.fit()
+        forecast_steps = 12  # Adjust as needed
+        forecast = results.get_forecast(steps=forecast_steps)
+        forecast_index = pd.date_range(df.index[-1], periods=forecast_steps + 1, freq='M')[1:]
+        forecast_df = pd.DataFrame(forecast.predicted_mean, index=forecast_index)
+
+        out = forecast_df.to_json(orient='index')
+    else:
+        
+        with ltc_model.no_grad():
+            data = torch.tensor(df.iloc[-12:, :].loc[:, ["prevVA", "prevTC", "prevTCT", "gdp"]].values, dtype=torch.float32)/10000
+            out = ltc_model(data)[0].detach().numpy() * 10000
+        out = pd.DataFrame(out, columns=df.columns, index=df.index)
+        out = out.to_json(orient='index')
     return out
 
 if __name__ == "__main__":
