@@ -2,18 +2,6 @@
 import { ref, onMounted } from 'vue';
 import Plotly from 'plotly.js-dist';
 
-const data2 = [{
-  x: [1,2,3,4],
-  y: [3,5,2,6],
-  type:"scatter"
-}]
-
-const data3 = [{
-  x: [1,2,3,4],
-  y: [21,25,24,22],
-  type:"scatter"
-}]
-
 const capacity_data = {
   x: ['Reefer', 'DG', 'Total'],
   y: [58, 45, 72],
@@ -37,6 +25,7 @@ const plotlyChart1 = ref(null);
 const plotlyChart2 = ref(null);
 const plotlyChart3 = ref(null);
 const plotlyChart4 = ref(null);
+const plotlyChart5 = ref(null);
 const n = ref(0)
 
 const notif_items = ref(null)
@@ -45,8 +34,68 @@ const admin = ref(false)
 onMounted(() => {
   admin.value = (localStorage.isAdmin == 'true')
   Plotly.newPlot(plotlyChart2.value, cap_data, {barmode: 'stack', title: "Resources at TUAS PORT"}, {responsive: true});
-  Plotly.newPlot(plotlyChart3.value, data2, {title: "Total Mass of Ore Shipped"}, {responsive: true});
-  Plotly.newPlot(plotlyChart4.value, data3, {title: "Total Mass of Oil Shipped"}, {responsive: true});
+  const demo_data = [{
+      x: [1,2,3,4,5,6,7,8,9],
+      y: [78, 66, 53, 36, 42, 68, 33, 56, 46],
+      type: 'scatter',
+      mode: 'lines',
+      name: "Reefer Use",
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 2
+      }
+    },
+    {
+      x: [9, 10, 11, 12],
+      y: [46, 55, 69, 77],
+      type: 'scatter',
+      mode: 'lines',
+      name: "Reefer Use (Prediction)",
+      line: {
+        color: 'rgb(219, 64, 82)',
+        width: 3
+      }
+    },
+    {
+      x: [1,2,3,4,5,6,7,8,9],
+      y: [33, 36, 45, 34, 31, 40, 33, 37, 38],
+      type: 'scatter',
+      mode: 'lines',
+      name: "DG Use",
+      line: {
+        color: 'rgb(255, 204, 102)',
+        width: 2
+      }
+    },
+    {
+      x: [9, 10, 11, 12],
+      y: [38, 40, 36, 35],
+      type: 'scatter',
+      mode: 'lines',
+      name: "DG Use (Prediction)",
+      line: {
+        color: 'rgb(255, 153, 0)',
+        width: 3
+      }
+    }]
+  Plotly.newPlot(plotlyChart5.value, demo_data, {
+    title: "Resource use %",
+    shapes: [
+    {
+        type: 'line',
+        yref: 'paper',
+        x0: 9,
+        y0: 0,
+        x1: 9,
+        y1: 1,
+        line:{
+            color: 'rgb(0, 0, 0)',
+            width: 3,
+            dash:'dot'
+        }
+    }
+    ]
+  }, {responsive: true});
   postData("http://127.0.0.1:8080/current_data").then((data) => {
     var plot_data = [{
       x: Object.keys(data),
@@ -77,28 +126,9 @@ onMounted(() => {
       Plotly.newPlot(plotlyChart1.value, plot_data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
     });
   });
-  makeChart()  
 });
 
 
-function makeChart() {
-  data2[0]['x'].push(data2[0]['x'].length+1);
-  data2[0]['y'].push((Math.random()-0.5) * Math.random() * 5 + data2[0]['y'][data2[0]['y'].length-1]);
-  Plotly.redraw(plotlyChart3.value);
-
-  data3[0]['x'].push(data3[0]['x'].length+1);
-  data3[0]['y'].push((Math.random()-0.5) * Math.random() * 5 + data3[0]['y'][data3[0]['y'].length-1]);
-  Plotly.redraw(plotlyChart4.value);
-
-  if (data2[0]['y'][data2[0]['y'].length-1] > 10) {
-    notif_items.value.push({ title: 'Not Enough Empty Containers!', message: 'TUAS PORT will not have enough Empty Containers in the next two months! Obtain more.'});
-  }
-
-  if (data3[0]['y'][data3[0]['y'].length-1] > 25) {
-    notif_items.value.push({ title: 'Influx of Ships Imminent!', message: 'Throughput is predicted to increase by 20% next month. Ready additional manpower.'});
-  }
-  setTimeout(makeChart, 10000);
-}
 
 async function postData(url = "", data = {}) {
   // Default options are marked with *
@@ -175,39 +205,20 @@ function checkLogin() {
     </div>
     <h1>The Frontend</h1>
     <div id="row-1">
-      <div class="col_double">
+      <div class="col_single">
         <h3>Throughput Forecast</h3>
         <div ref="plotlyChart1"></div>
       </div>
-      <div class="col_double">
-        <h3>Resources</h3>
+      <div class="col_single">
+        <h3>Resources (current)</h3>
         <div ref="plotlyChart2"></div>
       </div>
-      <div class="col_single scrollable">
-        <h3><u>Notifications</u></h3>
-        <div v-for="notif_info in notif_items">
-          <div class="card">
-            <svg class="card_image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 17H22V19H2V17H4V10C4 5.58172 7.58172 2 12 2C16.4183 2 20 5.58172 20 10V17ZM9 21H15V23H9V21Z"/></svg>
-            <div class="card_content">
-              <h4>{{ notif_info.title }}</h4>
-              <p>{{ notif_info.message }}</p>
-              <a class="close" href="">Close</a>
-            </div>
-          </div>
-          <hr>
-      </div>
+      <div class="col_single">
+        <h3>Resrouces (forecast)</h3>
+        <div ref="plotlyChart5"></div>
       </div>
     </div>
-    <h3>Shipping Trends</h3>
-    <div id="row-2">
-      <div class="col_double">
-        <div ref="plotlyChart3"></div>
-        </div>
-
-      <div class="col_double">
-        <div ref="plotlyChart4"></div>
-      </div>
-    </div>
+  
   </div>
   <Transition>
   <div @click="notifClick" v-if="notifPopup" class="popup">
@@ -419,11 +430,9 @@ h4 {
   gap: 20px;
 }
 
-#row-2 {
-  display: flex;
+
+.row {
   flex-direction: row;
-  justify-content: space-around;
-  gap: 20px;
 }
 
 .col_double {
