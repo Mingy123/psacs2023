@@ -14,8 +14,6 @@ app = Flask(__name__)
 CORS(app)
 global df
 df = pd.read_excel("singstat_historical_shipping.xlsx")
-df.columns = df.iloc[0]
-df = df.iloc[1:]
 df["Data Series"] = pd.to_datetime(df["Data Series"])
 df.sort_values(by="Data Series", inplace=True)
 df.reset_index(drop=True, inplace=True)
@@ -25,7 +23,8 @@ in_features = 4
 out_features = 3
 wiring = AutoNCP(100, out_features)  
 ltc_model = LTC(in_features, wiring, batch_first=True)
-ltc_model.load_state_dict(torch.load('model.pth')).to('cpu')
+ltc_model.load_state_dict(torch.load('model.pth'))
+ltc_model.to("cpu")
 
 @app.route("/forecast-alive")
 def is_alive():
@@ -52,7 +51,7 @@ def predict():
         df.reset_index(drop=True, inplace=True)
         df.set_index("Data Series", inplace=True)
 
-    if (args["model"] == "sarimax"):
+    if (args["model"] == "sarimax" or "input" not in args):
         order = (1, 1, 1)
         seasonal_order = (1, 1, 1, 12)
 
