@@ -19,7 +19,7 @@ const total_capacity = {
 var cap_data = [capacity_data, total_capacity]
 const plotlyChart2 = ref(null);
 const plotlyChart5 = ref(null);
-
+//  static data as we dont have real access to reefer/dg data
 onMounted(() => {
   Plotly.newPlot(plotlyChart2.value, cap_data, {barmode: 'stack', title: "Resources at TUAS PORT"}, {responsive: true});
   const demo_data = [{

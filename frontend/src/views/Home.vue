@@ -13,7 +13,12 @@ const plotlyChart5 = ref(null);
 const n = ref(0)
 
 const notif_items = ref([])
+var recommendations = ref([
+  // static entry because we don't have real access to reefer/dg data
+  { title: "Increase Reefer Capacity", description: "Reefer Capacity is predicted to increase 80%" } 
+]);
 const admin = ref(false)
+
 
 onMounted(() => {
   admin.value = (localStorage.isAdmin == 'true')
@@ -34,7 +39,15 @@ onMounted(() => {
     Plotly.newPlot(plotlyChart1.value, plot_data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
     postData("http://127.0.0.1:8080/forecast").then((data) => {
       // console.log(Objectdata);
-      console.log(Object.values(data).map(innerDict => innerDict["0"]));
+      var inner_data = Object.values(data).map(innerDict => innerDict["0"]);
+      inner_data.forEach((elem) => {
+        if (elem - inner_data[0] > 250) {
+          recommendations.value.push({ title: "Increase Overall Capacity", description: "Port is predicted to recieve 250000 more TEUs soon." })
+        }
+        if (inner_data[0] - elem > 250) {
+          recommendations.value.push({ title: "Decrease Overall Capacity", description: "Port is predicted to recieve 250000 less TEUs soon." })
+        }
+      })
       plot_data.push({
         x: Object.keys(data),
         y: Object.values(data).map(innerDict => innerDict["0"]),
@@ -135,33 +148,9 @@ function checkLogin() {
       </div>
     </div>
     <div class="recco-list">
-      <div class="recco-item">
-        <p>Recommendation a</p>
-        <p>Yes</p>
-      </div>
-      <div class="recco-item">
-        <p>Recommendation B</p>
-        <p>Yes</p>
-      </div>
-      <div class="recco-item">
-        <p>Recommendation C</p>
-        <p>why</p>
-      </div>
-      <div class="recco-item">
-        <p>Recommendation C</p>
-        <p>why</p>
-      </div>
-      <div class="recco-item">
-        <p>Recommendation C</p>
-        <p>why</p>
-      </div>
-      <div class="recco-item">
-        <p>Recommendation C</p>
-        <p>why</p>
-      </div>
-      <div class="recco-item">
-        <p>Recommendation C</p>
-        <p>why</p>
+      <div class="recco-item" v-for="(recommendation, index) in recommendations" :key="index">
+        <p><strong>{{ recommendation.title }}</strong></p>
+        <p>{{ recommendation.description }}</p>
       </div>
     </div>
   
@@ -392,7 +381,10 @@ h3 {
 h4 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.1em;
-  margin-top: 0px;
+}
+
+p{
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 #row-1 {
