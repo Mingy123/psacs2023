@@ -2,100 +2,23 @@
 import { ref, onMounted } from 'vue';
 import Plotly from 'plotly.js-dist';
 
-const capacity_data = {
-  x: ['Reefer', 'DG', 'Total'],
-  y: [58, 45, 72],
-  name: 'Used',
-  type: 'bar'
-}
-
-const total_capacity = {
-  x: ['Reefer', 'DG', 'Total'],
-  y: [100-58, 100-45, 100-72],
-  name: 'Remaining',
-  type: 'bar'
-};
-
-var cap_data = [capacity_data, total_capacity]
 
 const layout = {
   title: "My graph"
 }
 const plotlyChart1 = ref(null);
-const plotlyChart2 = ref(null);
 const plotlyChart3 = ref(null);
 const plotlyChart4 = ref(null);
 const plotlyChart5 = ref(null);
 const n = ref(0)
 
-const notif_items = ref(null)
+const notif_items = ref([])
 const admin = ref(false)
 
 onMounted(() => {
   admin.value = (localStorage.isAdmin == 'true')
-  Plotly.newPlot(plotlyChart2.value, cap_data, {barmode: 'stack', title: "Resources at TUAS PORT"}, {responsive: true});
-  const demo_data = [{
-      x: [1,2,3,4,5,6,7,8,9],
-      y: [78, 66, 53, 36, 42, 68, 33, 56, 46],
-      type: 'scatter',
-      mode: 'lines',
-      name: "Reefer Use",
-      line: {
-        color: 'rgb(55, 128, 191)',
-        width: 2
-      }
-    },
-    {
-      x: [9, 10, 11, 12],
-      y: [46, 55, 69, 77],
-      type: 'scatter',
-      mode: 'lines',
-      name: "Reefer Use (Prediction)",
-      line: {
-        color: 'rgb(219, 64, 82)',
-        width: 3
-      }
-    },
-    {
-      x: [1,2,3,4,5,6,7,8,9],
-      y: [33, 36, 45, 34, 31, 40, 33, 37, 38],
-      type: 'scatter',
-      mode: 'lines',
-      name: "DG Use",
-      line: {
-        color: 'rgb(255, 204, 102)',
-        width: 2
-      }
-    },
-    {
-      x: [9, 10, 11, 12],
-      y: [38, 40, 36, 35],
-      type: 'scatter',
-      mode: 'lines',
-      name: "DG Use (Prediction)",
-      line: {
-        color: 'rgb(255, 153, 0)',
-        width: 3
-      }
-    }]
-  Plotly.newPlot(plotlyChart5.value, demo_data, {
-    title: "Resource use %",
-    shapes: [
-    {
-        type: 'line',
-        yref: 'paper',
-        x0: 9,
-        y0: 0,
-        x1: 9,
-        y1: 1,
-        line:{
-            color: 'rgb(0, 0, 0)',
-            width: 3,
-            dash:'dot'
-        }
-    }
-    ]
-  }, {responsive: true});
+  let n = localStorage.getItem("notifications");
+  notif_items.value = n ? JSON.parse(n) : [];
   postData("http://127.0.0.1:8080/current_data").then((data) => {
     var plot_data = [{
       x: Object.keys(data),
@@ -183,6 +106,7 @@ function checkLogin() {
       <div class="sidebarBtn"><RouterLink to="/">Home</RouterLink></div>
       <div class="sidebarBtn"><RouterLink to="/resources">Resource Usage</RouterLink></div>
       <div class="sidebarBtn"><RouterLink to="/shipping">Shipping Trends</RouterLink></div>
+      <div class="sidebarBtn"><RouterLink to="/map">Map of Routes</RouterLink></div>
     </div>
     <div class="sidebarBottomContainer">
       <div class="sidebarBottom" @click="notifPopup = true">
@@ -209,32 +133,17 @@ function checkLogin() {
         <h3>Throughput Forecast</h3>
         <div ref="plotlyChart1"></div>
       </div>
-      <div class="col_single">
-        <h3>Resources (current)</h3>
-        <div ref="plotlyChart2"></div>
-      </div>
-      <div class="col_single">
-        <h3>Resrouces (forecast)</h3>
-        <div ref="plotlyChart5"></div>
-      </div>
     </div>
   
   </div>
   <Transition>
   <div @click="notifClick" v-if="notifPopup" class="popup">
-    <div class="popup-content">
-      <h1>Stuff</h1>
-      <h2>Stuff (scrollable)</h2>
-      <h1>Stuff</h1>
-      <h2>Stuff (scrollable)</h2>
-      <h1>Stuff</h1>
-      <h2>Stuff (scrollable)</h2>
-      <h1>Stuff</h1>
-      <h2>Stuff (scrollable)</h2>
-      <h1>Stuff</h1>
-      <h2>Stuff (scrollable)</h2>
-      <h1>Stuff</h1>
-      <h2>Stuff (scrollable)</h2>
+    <div class="popup-content notif-list">
+      <h2><u>Notifications</u></h2>
+      <div v-for="(notif, index) in notif_items" class="notif-item">
+        <h3>{{ notif.title }}</h3>
+        <p>{{ notif.message }}</p>
+      </div>
     </div>
   </div>
   </Transition>
@@ -256,6 +165,20 @@ function checkLogin() {
 }
 .v-enter-from, .v-leave-to {
   opacity: 0;
+}
+
+.notif-list {
+  /* The list of notification items */
+}
+
+.notif-item {
+  background-color: #e98074;
+  padding: 16px;
+  margin: 8px 0;
+  border-radius: 8px;
+  word-wrap: break-word;
+  color: #333;
+  max-width: 50vw;
 }
 
 .popup {
@@ -428,6 +351,8 @@ h4 {
   flex-direction: row;
   justify-content: space-around;
   gap: 20px;
+  margin: 0 5%;
+  width: 90%;
 }
 
 

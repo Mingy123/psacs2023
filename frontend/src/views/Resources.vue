@@ -1,89 +1,119 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import Plotly from 'plotly.js-dist';
 
-const plotlyChart3 = ref(null);
-const plotlyChart4 = ref(null);
-
-const data2 = [{
-  x: [1,2,3,4],
-  y: [3,5,2,6],
-  type:"scatter"
-}]
-
-const data3 = [{
-  x: [1,2,3,4],
-  y: [21,25,24,22],
-  type:"scatter"
-}]
-
-onMounted(() => {
-  Plotly.newPlot(plotlyChart3.value, data2, {title: "Total Mass of Ore Shipped"}, {responsive: true});
-  Plotly.newPlot(plotlyChart4.value, data3, {title: "Total Mass of Oil Shipped"}, {responsive: true});
-  makeChart();
-});
-
-function makeChart() {
-  data2[0]['x'].push(data2[0]['x'].length+1);
-  data2[0]['y'].push((Math.random()-0.5) * Math.random() * 5 + data2[0]['y'][data2[0]['y'].length-1]);
-  Plotly.redraw(plotlyChart3.value);
-
-  data3[0]['x'].push(data3[0]['x'].length+1);
-  data3[0]['y'].push((Math.random()-0.5) * Math.random() * 5 + data3[0]['y'][data3[0]['y'].length-1]);
-  Plotly.redraw(plotlyChart4.value);
-
-  if (data2[0]['y'][data2[0]['y'].length-1] > 10) {
-    notif_items.value.push({ title: 'Not Enough Empty Containers!', message: 'TUAS PORT will not have enough Empty Containers in the next two months! Obtain more.'});
-  }
-
-  if (data3[0]['y'][data3[0]['y'].length-1] > 25) {
-    notif_items.value.push({ title: 'Influx of Ships Imminent!', message: 'Throughput is predicted to increase by 20% next month. Ready additional manpower.'});
-  }
-  setTimeout(makeChart, 10000);
+const capacity_data = {
+  x: ['Reefer', 'DG', 'Total'],
+  y: [58, 45, 72],
+  name: 'Used',
+  type: 'bar'
 }
 
+const total_capacity = {
+  x: ['Reefer', 'DG', 'Total'],
+  y: [100-58, 100-45, 100-72],
+  name: 'Remaining',
+  type: 'bar'
+};
 
+var cap_data = [capacity_data, total_capacity]
+const plotlyChart2 = ref(null);
+const plotlyChart5 = ref(null);
+
+onMounted(() => {
+  Plotly.newPlot(plotlyChart2.value, cap_data, {barmode: 'stack', title: "Resources at TUAS PORT"}, {responsive: true});
+  const demo_data = [{
+      x: [1,2,3,4,5,6,7,8,9],
+      y: [78, 66, 53, 36, 42, 68, 33, 56, 46],
+      type: 'scatter',
+      mode: 'lines',
+      name: "Reefer Use",
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 2
+      }
+    },
+    {
+      x: [9, 10, 11, 12],
+      y: [46, 55, 69, 77],
+      type: 'scatter',
+      mode: 'lines',
+      name: "Reefer Use (Prediction)",
+      line: {
+        color: 'rgb(219, 64, 82)',
+        width: 3
+      }
+    },
+    {
+      x: [1,2,3,4,5,6,7,8,9],
+      y: [33, 36, 45, 34, 31, 40, 33, 37, 38],
+      type: 'scatter',
+      mode: 'lines',
+      name: "DG Use",
+      line: {
+        color: 'rgb(255, 204, 102)',
+        width: 2
+      }
+    },
+    {
+      x: [9, 10, 11, 12],
+      y: [38, 40, 36, 35],
+      type: 'scatter',
+      mode: 'lines',
+      name: "DG Use (Prediction)",
+      line: {
+        color: 'rgb(255, 153, 0)',
+        width: 3
+      }
+    }]
+  Plotly.newPlot(plotlyChart5.value, demo_data, {
+    title: "Resource use %",
+    shapes: [
+    {
+        type: 'line',
+        yref: 'paper',
+        x0: 9,
+        y0: 0,
+        x1: 9,
+        y1: 1,
+        line:{
+            color: 'rgb(0, 0, 0)',
+            width: 3,
+            dash:'dot'
+        }
+    }
+    ]
+  }, {responsive: true});
+})
 </script>
-<template>
-  <h1>Shipping Trends</h1>
-  <div id="row-2">
-    <div class="col_double">
-      <div ref="plotlyChart3"></div>
-      </div>
 
-    <div class="col_double">
-      <div ref="plotlyChart4"></div>
+<template>
+  <div class="backBtn">
+    <RouterLink to="/"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/><span class="material-symbols-outlined">home</span></RouterLink>
+  </div>
+  <div id="row-1">
+    <div class="col_single">
+      <h3>Resources (current)</h3>
+      <div ref="plotlyChart2"></div>
+    </div>
+    <div class="col_single">
+      <h3>Resrouces (forecast)</h3>
+      <div ref="plotlyChart5"></div>
     </div>
   </div>
 </template>
-<style>
-#row-2 {
+
+<style scoped>
+#row-1 {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   gap: 20px;
+  margin: 0 5%;
+  width: 90%;
 }
-
-
-.col_double {
-  flex-grow: 2;
-}
-
-h1 {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 5em;
-  text-align: center;
-}
-
-h3 {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.5em;
-  text-align: center;
-}
-
-h4 {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.1em;
-  margin-top: 0px;
+.col_single {
+  flex-grow: 1;
+  width: 200px;
 }
 </style>
