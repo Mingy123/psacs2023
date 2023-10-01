@@ -72,7 +72,8 @@ def predict():
         data = torch.tensor(df.iloc[-12:, :].loc[:, ["prevVA", "prevTC", "prevTCT", "gdp"]].values, dtype=torch.float32)/10000
         out = ltc_model(data)[0].detach().numpy() * 10000
         forecast_index = pd.date_range(df.index[-1], periods=12 + 1, freq='M')[1:]
-        out = pd.DataFrame(out, columns=["prevVA", "prevTC", "prevTCT", "gdp"], index=forecast_index)
+        out = pd.DataFrame(out, columns=["prevVA", "prevTC", "prevTCT"], index=forecast_index)
+        out.rename({"prevTCT":"0"}, inplace=True, axis=1)
         out = out.to_json(orient='index')
     return out
 
