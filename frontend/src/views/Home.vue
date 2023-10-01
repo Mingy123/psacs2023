@@ -8,7 +8,7 @@ const layout = {
 }
 const plotlyChart1 = ref(null);
 const plotlyChart3 = ref(null);
-const plotlyChart4 = ref(null);
+const plotlyChart6 = ref(null);
 const plotlyChart5 = ref(null);
 const n = ref(0)
 
@@ -44,7 +44,33 @@ onMounted(() => {
         width: 1
       }
     }]
+
+    var plot_data2 = [{
+      x: Object.keys(data),
+      y: Object.values(data).map(innerDict => innerDict["Vessel Arrivals"]),
+      type: 'scatter',
+      mode: 'lines',
+      name: "Historical Data",
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 1
+      }
+    }]
+
+    var plot_data3 = [{
+      x: Object.keys(data),
+      y: Object.values(data).map(innerDict => innerDict["Total Cargo"]),
+      type: 'scatter',
+      mode: 'lines',
+      name: "Historical Data",
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 1
+      }
+    }]
     Plotly.newPlot(plotlyChart1.value, plot_data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
+    Plotly.newPlot(plotlyChart5.value, plot_data2, {title: "Vessel Arrivals"}, {responsive: true});
+    Plotly.newPlot(plotlyChart6.value, plot_data3, {title: "Total Cargo in Tonnes"}, {responsive: true});
     postData("http://127.0.0.1:8080/forecast").then((data) => {
       // console.log(Objectdata);
       var inner_data = Object.values(data).map(innerDict => innerDict["0"]);
@@ -59,6 +85,31 @@ onMounted(() => {
       plot_data.push({
         x: Object.keys(data),
         y: Object.values(data).map(innerDict => innerDict["0"]),
+        type: 'scatter',
+        mode: "lines",
+        name: "Forecast",
+        line: {
+          color: 'rgb(219, 64, 82)',
+          width: 2
+        }
+      })
+      Plotly.newPlot(plotlyChart5.value, plot_data2, {title: "Vessel Arrivals"}, {responsive: true});
+      plot_data2.push({
+        x: Object.keys(data),
+        y: Object.values(data).map(innerDict => innerDict["prevVA"]),
+        type: 'scatter',
+        mode: "lines",
+        name: "Forecast",
+        line: {
+          color: 'rgb(219, 64, 82)',
+          width: 2
+        }
+      })
+      Plotly.newPlot(plotlyChart6.value, plot_data3, {title: "Total Cargo in Tonnes"}, {responsive: true});
+
+      plot_data3.push({
+        x: Object.keys(data),
+        y: Object.values(data).map(innerDict => innerDict["prevTC"]),
         type: 'scatter',
         mode: "lines",
         name: "Forecast",
@@ -173,6 +224,8 @@ function updateDataSubmit() {
       <div class="col_single">
         <h3>Throughput Forecast</h3>
         <div ref="plotlyChart1"></div>
+        <div ref="plotlyChart5"></div>
+        <div ref="plotlyChart6"></div>
       </div>
     </div>
     <div class="update-data">
