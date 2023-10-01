@@ -47,7 +47,7 @@ onMounted(() => {
 
     var plot_data2 = [{
       x: Object.keys(data),
-      y: Object.values(data).map(innerDict => innerDict["Vessel Arrivals"]),
+      y: Object.values(data).map(innerDict => innerDict["Vessel Arrivals "]),
       type: 'scatter',
       mode: 'lines',
       name: "Historical Data",
@@ -59,7 +59,7 @@ onMounted(() => {
 
     var plot_data3 = [{
       x: Object.keys(data),
-      y: Object.values(data).map(innerDict => innerDict["Total Cargo"]),
+      y: Object.values(data).map(innerDict => innerDict["Total Cargo "]),
       type: 'scatter',
       mode: 'lines',
       name: "Historical Data",
@@ -74,13 +74,16 @@ onMounted(() => {
     postData("http://127.0.0.1:8080/forecast").then((data) => {
       // console.log(Objectdata);
       var inner_data = Object.values(data).map(innerDict => innerDict["0"]);
-      inner_data.forEach((elem) => {
+      inner_data.every((elem) => {
         if (elem - inner_data[0] > 250) {
-          recommendations.value.push({ title: "Increase Overall Capacity", description: "Port is predicted to recieve 250000 more TEUs soon." })
+          recommendations.value.push({ title: "Increase Overall Capacity", description: "Port is predicted to recieve 250000 more TEUs soon." });
+          return false;
         }
         if (inner_data[0] - elem > 250) {
-          recommendations.value.push({ title: "Decrease Overall Capacity", description: "Port is predicted to recieve 250000 less TEUs soon." })
+          recommendations.value.push({ title: "Decrease Overall Capacity", description: "Port is predicted to recieve 250000 less TEUs soon." });
+          return false;
         }
+        return true;
       })
       plot_data.push({
         x: Object.keys(data),

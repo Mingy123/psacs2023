@@ -52,8 +52,8 @@ def predict():
         df.reset_index(drop=True, inplace=True)
         df.set_index("Data Series", inplace=True)
 
-    # if "model" in args or "input" not in args:
-    if ("model" in args and args["model"] == "SARIMAX") or ("model" not in args):
+    # we are not using sarimax to show off the full potential of lnn!!!
+    if False:
         order = (1, 1, 1)
         seasonal_order = (1, 1, 1, 12)
 
