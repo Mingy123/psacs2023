@@ -127,11 +127,41 @@ function checkLogin() {
     <div class="sidebarIcon" @click="sidebarVisible = !sidebarVisible">
       <svg height="1em" viewBox="0 0 448 512"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
     </div>
-    <h1>The Frontend</h1>
+    <h1>PORT++</h1>
     <div id="row-1">
       <div class="col_single">
         <h3>Throughput Forecast</h3>
         <div ref="plotlyChart1"></div>
+      </div>
+    </div>
+    <div class="recco-list">
+      <div class="recco-item">
+        <p>Recommendation a</p>
+        <p>Yes</p>
+      </div>
+      <div class="recco-item">
+        <p>Recommendation B</p>
+        <p>Yes</p>
+      </div>
+      <div class="recco-item">
+        <p>Recommendation C</p>
+        <p>why</p>
+      </div>
+      <div class="recco-item">
+        <p>Recommendation C</p>
+        <p>why</p>
+      </div>
+      <div class="recco-item">
+        <p>Recommendation C</p>
+        <p>why</p>
+      </div>
+      <div class="recco-item">
+        <p>Recommendation C</p>
+        <p>why</p>
+      </div>
+      <div class="recco-item">
+        <p>Recommendation C</p>
+        <p>why</p>
       </div>
     </div>
   
@@ -165,6 +195,25 @@ function checkLogin() {
 }
 .v-enter-from, .v-leave-to {
   opacity: 0;
+}
+
+.recco-list {
+  margin: 32px 5%;
+  width: 90%;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: 0;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.recco-item {
+  border: 1px solid black;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  margin: 0 2vw;
+  padding: 24px;
+  background-color: hsl(35, 60%, 65%);
 }
 
 .notif-list {
