@@ -93,6 +93,8 @@ onMounted(() => {
           width: 2
         }
       })
+
+      Plotly.newPlot(plotlyChart1.value, plot_data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
       Plotly.newPlot(plotlyChart5.value, plot_data2, {title: "Vessel Arrivals"}, {responsive: true});
       plot_data2.push({
         x: Object.keys(data),
@@ -105,7 +107,9 @@ onMounted(() => {
           width: 2
         }
       })
-      Plotly.newPlot(plotlyChart6.value, plot_data3, {title: "Total Cargo in Tonnes"}, {responsive: true});
+
+      Plotly.newPlot(plotlyChart5.value, plot_data2, {title: "Vessel Arrivals"}, {responsive: true});
+      
 
       plot_data3.push({
         x: Object.keys(data),
@@ -118,7 +122,7 @@ onMounted(() => {
           width: 2
         }
       })
-      Plotly.newPlot(plotlyChart1.value, plot_data, {title: "Total Container Throughput (Thousand TEUs)"}, {responsive: true});
+      Plotly.newPlot(plotlyChart6.value, plot_data3, {title: "Total Cargo in Tonnes"}, {responsive: true});
     });
   });
 });
