@@ -179,6 +179,8 @@ function updateDataSubmit() {
       <div v-if="showUpdateData" class="update-data-form">
         <input @keyup.enter="updateDataSubmit" v-model="updateData1" placeholder="U.S. GDP this month">
         <input @keyup.enter="updateDataSubmit" v-model="updateData2" placeholder="Cargo in tonnes">
+        <input @keyup.enter="updateDataSubmit" v-model="updateData1" placeholder="Vessel Arrivals">
+        <input @keyup.enter="updateDataSubmit" v-model="updateData1" placeholder="Container Throughput">
         <button @click="updateDataSubmit">Submit</button>
       </div>
       <button v-else ref="updateDataBtn" @click="updateDataBtnClick">Update Data</button>
